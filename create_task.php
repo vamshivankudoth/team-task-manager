@@ -53,8 +53,8 @@
             <label>Assign User</label>
             <select name="user" class="form-control">
                 <?php
-                $users = $conn->query("SELECT * FROM users");
-                while($u = $users->fetch_assoc()){
+                $stmt = $conn->query("SELECT * FROM users");
+                while($u = $stmt->fetch(PDO::FETCH_ASSOC)){
                     echo "<option value='{$u['id']}'>{$u['name']}</option>";
                 }
                 ?>
@@ -65,8 +65,8 @@
             <label>Project</label>
             <select name="project" class="form-control">
                 <?php
-                $pro = $conn->query("SELECT * FROM projects");
-                while($p = $pro->fetch_assoc()){
+                $stmt = $conn->query("SELECT * FROM projects");
+                while($p = $stmt->fetch(PDO::FETCH_ASSOC)){
                     echo "<option value='{$p['id']}'>{$p['project_name']}</option>";
                 }
                 ?>
@@ -84,14 +84,17 @@
 
     <?php
     if(isset($_POST['create'])){
-        $t=$_POST['title'];
-        $d=$_POST['desc'];
-        $u=$_POST['user'];
-        $p=$_POST['project'];
-        $dl=$_POST['deadline'];
+        $t  = $_POST['title'];
+        $d  = $_POST['desc'];
+        $u  = $_POST['user'];
+        $p  = $_POST['project'];
+        $dl = $_POST['deadline'];
 
-        $conn->query("INSERT INTO tasks(title,description,assigned_to,project_id,deadline) 
-        VALUES('$t','$d','$u','$p','$dl')");
+        // ✅ PDO prepared INSERT
+        $stmt = $conn->prepare(
+            "INSERT INTO tasks(title,description,assigned_to,project_id,deadline) VALUES(?,?,?,?,?)"
+        );
+        $stmt->execute([$t, $d, $u, $p, $dl]);
 
         echo "<div class='alert alert-success mt-3'>Task created successfully!</div>";
     }
