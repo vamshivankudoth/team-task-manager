@@ -21,10 +21,14 @@
     if(isset($_POST['check'])){
         $email = $_POST['email'];
 
-        $res = $conn->query("SELECT * FROM users WHERE email='$email'");
+        // ✅ FIX: PDO prepared query
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email=?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if($res->num_rows > 0){
+        if($user){
             header("Location: reset_password.php?email=$email");
+            exit();
         } else {
             echo "<div class='alert alert-danger mt-2'>Email not found</div>";
         }
