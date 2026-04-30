@@ -1,4 +1,12 @@
-<?php include "config.php"; ?>
+```php
+<?php include "config.php"; 
+
+// 🔐 Optional session check (recommended)
+if(!isset($_SESSION['user'])){
+    header("Location: index.php");
+    exit();
+}
+?>
 
 <!DOCTYPE html>
 <html>
@@ -83,7 +91,7 @@
 
             <!-- Top Navbar -->
             <div class="navbar-custom d-flex justify-content-between">
-                <h5>Welcome </h5>
+                <h5>Welcome</h5>
                 <span>Role: <?php echo $_SESSION['role']; ?></span>
             </div>
 
@@ -92,10 +100,18 @@
                 <h3 class="mb-4">📊 Dashboard Overview</h3>
 
                 <?php
-                $total = $conn->query("SELECT COUNT(*) as c FROM tasks")->fetch_assoc()['c'];
-                $completed = $conn->query("SELECT COUNT(*) as c FROM tasks WHERE status='Completed'")->fetch_assoc()['c'];
-                $pending = $conn->query("SELECT COUNT(*) as c FROM tasks WHERE status='Pending'")->fetch_assoc()['c'];
-                $overdue = $conn->query("SELECT COUNT(*) as c FROM tasks WHERE deadline < CURDATE() AND status!='Completed'")->fetch_assoc()['c'];
+                // ✅ PDO queries
+                $stmt = $conn->query("SELECT COUNT(*) as c FROM tasks");
+                $total = $stmt->fetch(PDO::FETCH_ASSOC)['c'];
+
+                $stmt = $conn->query("SELECT COUNT(*) as c FROM tasks WHERE status='Completed'");
+                $completed = $stmt->fetch(PDO::FETCH_ASSOC)['c'];
+
+                $stmt = $conn->query("SELECT COUNT(*) as c FROM tasks WHERE status='Pending'");
+                $pending = $stmt->fetch(PDO::FETCH_ASSOC)['c'];
+
+                $stmt = $conn->query("SELECT COUNT(*) as c FROM tasks WHERE deadline < CURDATE() AND status!='Completed'");
+                $overdue = $stmt->fetch(PDO::FETCH_ASSOC)['c'];
                 ?>
 
                 <div class="row text-center">
@@ -147,3 +163,4 @@
 
 </body>
 </html>
+```
