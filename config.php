@@ -13,3 +13,6 @@ try {
     die("Database Connection Failed");
 }
 ?>
+catch (Exception $e) {
+    die($e->getMessage());
+}
