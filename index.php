@@ -6,7 +6,7 @@ include "config.php";
 
 $error = "";
 
-// 🔐 Handle login BEFORE HTML (fix header issue)
+// 🔐 Handle login BEFORE HTML
 if(isset($_POST['login'])){
     $email = trim($_POST['email']);
     $pass  = trim($_POST['password']);
@@ -20,7 +20,7 @@ if(isset($_POST['login'])){
     }
     else{
         $res = $conn->query("SELECT * FROM users WHERE email='$email'");
-        $user = $res->fetch_assoc();
+        $user = $res->fetch(PDO::FETCH_ASSOC); // ✅ FIXED
 
         if($user && password_verify($pass,$user['password'])){
             $_SESSION['user'] = $user['id'];
@@ -78,7 +78,6 @@ if(isset($_POST['login'])){
     <div class="login-box">
         <h4 class="mb-3">Login</h4>
 
-        <!-- ✅ Error Message -->
         <?php if($error != ""){ ?>
             <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php } ?>
@@ -90,7 +89,6 @@ if(isset($_POST['login'])){
             <button class="btn btn-primary w-100" name="login">Login</button>
         </form>
 
-        <!-- Links -->
         <div class="d-flex justify-content-between mt-3">
             <a href="signup.php">Signup</a>
             <a href="forgot_password.php">Forgot Password?</a>
