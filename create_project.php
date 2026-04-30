@@ -59,7 +59,9 @@ if(!isset($_SESSION['role']) || $_SESSION['role']!='admin'){
         $p = $_POST['pname'];
         $uid = $_SESSION['user'];
 
-        $conn->query("INSERT INTO projects(project_name,created_by) VALUES('$p','$uid')");
+        // ✅ PDO prepared insert
+        $stmt = $conn->prepare("INSERT INTO projects(project_name,created_by) VALUES(?,?)");
+        $stmt->execute([$p, $uid]);
 
         echo "<div class='alert alert-success mt-3'>Project created successfully!</div>";
     }
