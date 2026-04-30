@@ -22,7 +22,9 @@
         $email = $_GET['email'];
         $newpass = password_hash($_POST['newpass'], PASSWORD_DEFAULT);
 
-        $conn->query("UPDATE users SET password='$newpass' WHERE email='$email'");
+        // ✅ FIXED (PDO)
+        $stmt = $conn->prepare("UPDATE users SET password=? WHERE email=?");
+        $stmt->execute([$newpass, $email]);
 
         echo "<div class='alert alert-success mt-2'>Password updated! <a href='index.php'>Login</a></div>";
     }
