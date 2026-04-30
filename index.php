@@ -1,3 +1,4 @@
+```php
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -19,8 +20,10 @@ if(isset($_POST['login'])){
         $error = "Invalid email format";
     }
     else{
-        $res = $conn->query("SELECT * FROM users WHERE email='$email'");
-        $user = $res->fetch(PDO::FETCH_ASSOC); // ✅ FIXED
+        // ✅ PDO prepared statement (FINAL FIX)
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if($user && password_verify($pass,$user['password'])){
             $_SESSION['user'] = $user['id'];
@@ -78,6 +81,7 @@ if(isset($_POST['login'])){
     <div class="login-box">
         <h4 class="mb-3">Login</h4>
 
+        <!-- ✅ Error Message -->
         <?php if($error != ""){ ?>
             <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php } ?>
@@ -100,3 +104,4 @@ if(isset($_POST['login'])){
 
 </body>
 </html>
+```
