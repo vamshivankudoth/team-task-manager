@@ -58,9 +58,9 @@
                 <?php
                 $res = $conn->query("SELECT * FROM tasks");
 
-                while($row = $res->fetch_assoc()){
+                // ✅ FIX: PDO fetch
+                while($row = $res->fetch(PDO::FETCH_ASSOC)){
 
-                    // Badge color logic
                     $color = "secondary";
                     if($row['status'] == "Pending") $color = "warning";
                     if($row['status'] == "In Progress") $color = "primary";
@@ -98,10 +98,13 @@
 
 <?php
 if(isset($_POST['update'])){
-    $id=$_POST['id'];
-    $s=$_POST['status'];
+    $id = $_POST['id'];
+    $s  = $_POST['status'];
 
-    $conn->query("UPDATE tasks SET status='$s' WHERE id=$id");
+    // ✅ FIX: PDO prepared update
+    $stmt = $conn->prepare("UPDATE tasks SET status=? WHERE id=?");
+    $stmt->execute([$s, $id]);
+
     header("Location: tasks.php");
 }
 ?>
