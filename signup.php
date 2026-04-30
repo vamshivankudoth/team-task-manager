@@ -45,9 +45,7 @@
 
         <form method="POST">
             <input type="text" name="name" class="form-control mb-3" placeholder="Full Name" required>
-
             <input type="email" name="email" class="form-control mb-3" placeholder="Email Address" required>
-
             <input type="password" name="password" class="form-control mb-3" placeholder="Password" required>
 
             <select name="role" class="form-control mb-3">
@@ -64,17 +62,23 @@
 
         <?php
         if(isset($_POST['register'])){
-            $name=$_POST['name'];
-            $email=$_POST['email'];
-            $pass=password_hash($_POST['password'], PASSWORD_DEFAULT);
-            $role=$_POST['role'];
+            $name = $_POST['name'];
+            $email = $_POST['email'];
+            $pass = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            $role = $_POST['role'];
 
-            $check = $conn->query("SELECT * FROM users WHERE email='$email'");
+            // ✅ CHECK EMAIL (PDO)
+            $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if($check->num_rows > 0){
+            if($user){
                 echo "<div class='alert alert-warning mt-2'>Email already exists</div>";
             } else {
-                $conn->query("INSERT INTO users(name,email,password,role) VALUES('$name','$email','$pass','$role')");
+                // ✅ INSERT USER (PDO)
+                $stmt = $conn->prepare("INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)");
+                $stmt->execute([$name, $email, $pass, $role]);
+
                 echo "<div class='alert alert-success mt-2'>Registered Successfully! <a href='index.php'>Login</a></div>";
             }
         }
